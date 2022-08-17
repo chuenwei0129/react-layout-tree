@@ -1,5 +1,5 @@
 import Konva from 'konva'
-import { canvasLayer, HELPER_GRID_SIZE } from '.'
+import { canvasLayer, HELPER_GRID_SIZE } from './demo'
 
 // 二叉树
 export type BinaryTree = {
@@ -47,8 +47,7 @@ const createLayoutTree = (sourceTree: BinaryTree) => {
   let posX = HELPER_GRID_SIZE
   // 中序遍历
   // 计算规则
-  // 最左边节点 (30, depth * 30 + 30)
-  // root 节点 (30 + 30 * (遍历次数 - 1), 30)
+  // 位置由遍历顺序决定，每往下遍历一次，x 往右移一位，y === 深度
   // 缺点：树不够紧凑，浪费空间
   const knuth_layout = (tree: BinaryTree, depth: number) => {
     tree.left && knuth_layout(tree.left, depth + 1)

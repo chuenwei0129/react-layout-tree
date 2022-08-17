@@ -1,9 +1,10 @@
 import { useEffect, useRef } from 'react'
 import './App.css'
-import { canvasLayer, clearCanvasLayer, render } from './render'
-import { treeData } from './render/data'
-import { layoutF1 } from './render/drawBinaryTree'
-import { layoutF2 } from './render/drawTree'
+import { treeData } from './renderer/data'
+import { canvasLayer, clearCanvasLayer, render } from './renderer/demo'
+import { layoutF1 } from './renderer/drawKnuthTree'
+import { layoutF2 } from './renderer/drawOutLineTree'
+import { layoutF3 } from './renderer/drawTree'
 
 function App() {
   const containerRef = useRef<HTMLDivElement>(null!)
@@ -16,26 +17,20 @@ function App() {
     canvasLayer && clearCanvasLayer()
     // 渲染数据
     layoutF1({
-      val: '0',
+      val: '5',
       left: {
-        val: '0-0',
+        val: '3',
         left: {
-          val: '0-0-0'
+          val: '0'
         },
         right: {
-          val: '0-0-1'
+          val: '4'
         }
       },
       right: {
-        val: '0-1',
+        val: '6',
         right: {
-          val: '0-1-1',
-          right: {
-            val: '0-1-1-1',
-            right: {
-              val: '0-1-1-1-1'
-            }
-          }
+          val: '8'
         }
       }
     })
@@ -43,8 +38,12 @@ function App() {
 
   const handlerLayoutF2 = () => {
     canvasLayer && clearCanvasLayer()
-    // 渲染数据
     layoutF2(treeData)
+  }
+
+  const handlerLayoutF3 = () => {
+    canvasLayer && clearCanvasLayer()
+    layoutF3(treeData)
   }
 
   return (
@@ -52,6 +51,7 @@ function App() {
       <div className='button-group'>
         <button onClick={handlerLayoutF1}>算法1</button>
         <button onClick={handlerLayoutF2}>算法2</button>
+        <button onClick={handlerLayoutF3}>算法3</button>
       </div>
       <div className='container' ref={containerRef}></div>
     </div>

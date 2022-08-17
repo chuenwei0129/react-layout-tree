@@ -1,5 +1,5 @@
-import { drawConnectedLine, drawTreeNode, HELPER_GRID_SIZE } from '.'
 import { Tree } from './data'
+import { drawConnectedLine, drawTreeNode, HELPER_GRID_SIZE } from './demo'
 
 // 计算树节点位置
 const createPosition2Tree = (tree: Tree) => {
@@ -17,6 +17,7 @@ const createLayoutTree = (sourceTree: Tree) => {
   const layoutTree: Tree = structuredClone(sourceTree)
 
   const outLine: number[] = []
+  // 先序遍历
   const minimum_ws = (tree: Tree, depth = 0) => {
     // 维持树每一层第一个节点的 x 为 0
     if (outLine[depth] === undefined) {
