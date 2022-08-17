@@ -9,11 +9,12 @@ export class LayoutTree {
   public y: number
   public children: LayoutTree[]
   public offset: number
-  constructor(public tree: SourceTree, depth = 0) {
+  public source: SourceTree
+  constructor(tree: SourceTree, depth = 0) {
     this.x = -1
-    // y 坐标为当前深度
     this.y = depth
     this.offset = 0
+    this.source = tree
     this.children = tree.children.map(child => {
       return new LayoutTree(child, depth + 1)
     })

@@ -16,9 +16,8 @@ export const createRenderer = (container: HTMLDivElement) => {
     height: CONTAINER_HEIGHT
   })
 
-  // 渲染辅助网格 Layer 与 shape
+  // 顺序决定图层显示
   renderHelperGrid(stage)
-  // 顺序决定图层顺序
   renderTreeLayer(stage)
 }
 
@@ -30,7 +29,6 @@ const renderHelperGrid = (stage: Stage) => {
 
   // create our shape
   for (let x = 0; x <= CONTAINER_WIDTH; x += HELPER_GRID_SIZE) {
-    // 辅助网格列
     const column = new Konva.Line({
       // x 轴
       points: [x, 0, x, CONTAINER_WIDTH],
@@ -41,7 +39,6 @@ const renderHelperGrid = (stage: Stage) => {
     helperGridLayer.add(column)
   }
 
-  // 辅助网格行
   for (let y = 0; y <= CONTAINER_HEIGHT; y += HELPER_GRID_SIZE) {
     const row = new Konva.Line({
       // points[2] === 宽度
@@ -63,19 +60,17 @@ const renderTreeLayer = (stage: Stage) => {
   stage.add(treeLayer)
 }
 
-// 清除树图层上的 shape
 export const clearTree = () => treeLayer?.removeChildren()
 
-// 后序遍历生成树 shape
+// 后序遍历
 const renderTreeShape = (tree: LayoutTree) => {
   tree.children.forEach(child => {
     renderTreeNodeConnectedLine(tree, child)
     renderTreeShape(child)
   })
-  renderTreeNode(tree.x, tree.y)
+  renderTreeNode(tree)
 }
 
-// 布局树节点连接线
 const renderTreeNodeConnectedLine = (treeNode1: LayoutTree, treeNode2: LayoutTree) => {
   const connectedLine = new Konva.Line({
     points: [treeNode1.x, treeNode1.y, treeNode2.x, treeNode2.y],
@@ -88,12 +83,11 @@ const renderTreeNodeConnectedLine = (treeNode1: LayoutTree, treeNode2: LayoutTre
   treeLayer?.draw()
 }
 
-// 绘制布局树节点
-const renderTreeNode = (x: number, y: number) => {
+const renderTreeNode = (tree: LayoutTree) => {
   const treeNode = new Konva.Circle({
     // 圆心坐标
-    x,
-    y,
+    x: tree.x,
+    y: tree.y,
     radius: HELPER_GRID_SIZE / 3,
     fill: '#fff',
     stroke: 'black',
@@ -101,13 +95,25 @@ const renderTreeNode = (x: number, y: number) => {
   })
   treeLayer?.add(treeNode)
   treeLayer?.draw()
+
+  const text = new Konva.Text({
+    x: tree.x,
+    y: tree.y,
+    text: tree.source.val,
+    fontSize: 14
+  })
+  text.offsetX(text.width() / 2)
+  text.offsetY(text.height() / 2)
+  treeLayer?.add(text)
 }
 
 const setRealPosition = (tree: LayoutTree) => {
+  // 长度映射
   tree.x *= HELPER_GRID_SIZE
-  tree.x += HELPER_GRID_SIZE
-
   tree.y *= HELPER_GRID_SIZE
+
+  // padding-left / top
+  tree.x += HELPER_GRID_SIZE
   tree.y += HELPER_GRID_SIZE
 
   tree.children.forEach(setRealPosition)
@@ -116,7 +122,6 @@ const setRealPosition = (tree: LayoutTree) => {
 // 渲染树到页面上
 export const renderTree = (tree: SourceTree, setAbstractPosition: (tree: LayoutTree) => void) => {
   const layoutTree: LayoutTree = structuredClone(new LayoutTree(tree))
-  // 核心算法，数据加工 SourceTree -> LayoutTree，确定树的布局位置
   setAbstractPosition(layoutTree)
   setRealPosition(layoutTree)
   renderTreeShape(layoutTree)

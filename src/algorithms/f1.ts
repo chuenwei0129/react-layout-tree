@@ -7,7 +7,7 @@ export const f1 = (layoutTree: LayoutTree) => {
   // 遍历开始时的 x 值为 1 时，第一个渲染的节点坐标为 (0, depth)
   let traverseStartX = 1
   ;[...traverse(layoutTree, 1)].forEach(tree => {
-    // 每个节点 x 都被初始化为 -1，y 深度
+    // 每个节点 x 都被初始化为 -1，y 为深度
     tree.x += traverseStartX
     traverseStartX++
   })

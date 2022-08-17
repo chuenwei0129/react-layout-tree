@@ -12,7 +12,8 @@ export const f2 = (layoutTree: LayoutTree) => {
     }
     tree.x = sameDepthNextPosXGroup[depth]
     // 指针指向同层下个节点的 x 坐标
-    sameDepthNextPosXGroup[depth]++
+    // 为了与算法三对比此处 +2，一般 +1
+    sameDepthNextPosXGroup[depth] += 2
     tree.children.forEach(child => {
       preOrder(child, depth + 1)
     })
