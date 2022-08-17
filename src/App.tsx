@@ -1,57 +1,41 @@
 import { useEffect, useRef } from 'react'
+import { f1 } from './algorithms/f1'
+import { f2 } from './algorithms/f2'
+import { f3 } from './algorithms/f3'
 import './App.css'
-import { treeData } from './renderer/data'
-import { canvasLayer, clearCanvasLayer, render } from './renderer/demo'
-import { layoutF1 } from './renderer/drawKnuthTree'
-import { layoutF2 } from './renderer/drawOutLineTree'
-import { layoutF3 } from './renderer/drawTree'
+import { sourceTree } from './renderer/data'
+
+import { clearTree, createRenderer, renderTree } from './renderer/renderer'
 
 function App() {
   const containerRef = useRef<HTMLDivElement>(null!)
 
   useEffect(() => {
-    render(containerRef.current)
+    createRenderer(containerRef.current)
   }, [])
 
-  const handlerLayoutF1 = () => {
-    canvasLayer && clearCanvasLayer()
-    // 渲染数据
-    layoutF1({
-      val: '5',
-      left: {
-        val: '3',
-        left: {
-          val: '0'
-        },
-        right: {
-          val: '4'
-        }
-      },
-      right: {
-        val: '6',
-        right: {
-          val: '8'
-        }
-      }
-    })
+  const handlerF1 = () => {
+    // 清除之前的树
+    clearTree()
+    renderTree(sourceTree, f1)
   }
 
-  const handlerLayoutF2 = () => {
-    canvasLayer && clearCanvasLayer()
-    layoutF2(treeData)
+  const handlerF2 = () => {
+    clearTree()
+    renderTree(sourceTree, f2)
   }
 
-  const handlerLayoutF3 = () => {
-    canvasLayer && clearCanvasLayer()
-    layoutF3(treeData)
+  const handlerF3 = () => {
+    clearTree()
+    renderTree(sourceTree, f3)
   }
 
   return (
     <div className='App'>
       <div className='button-group'>
-        <button onClick={handlerLayoutF1}>算法1</button>
-        <button onClick={handlerLayoutF2}>算法2</button>
-        <button onClick={handlerLayoutF3}>算法3</button>
+        <button onClick={handlerF1}>算法1</button>
+        <button onClick={handlerF2}>算法2</button>
+        <button onClick={handlerF3}>算法3</button>
       </div>
       <div className='container' ref={containerRef}></div>
     </div>

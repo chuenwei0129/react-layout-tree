@@ -1,0 +1,22 @@
+import type { LayoutTree } from '../renderer/model'
+
+// 同树的轮廓算法
+export const f2 = (layoutTree: LayoutTree) => {
+  // 同深度节点坐标指针，指针会在再次遍历到这一层时指向同层的下个节点坐标，数组存储的是所有深度的指针的集合
+  const sameDepthNextPosXGroup: number[] = []
+  // 先序遍历
+  const preOrder = (tree: LayoutTree, depth = 0) => {
+    // 树每一层第一个节点的 x 坐标都设置为 0
+    if (sameDepthNextPosXGroup[depth] === undefined) {
+      sameDepthNextPosXGroup[depth] = 0
+    }
+    tree.x = sameDepthNextPosXGroup[depth]
+    // 指针指向同层下个节点的 x 坐标
+    sameDepthNextPosXGroup[depth]++
+    tree.children.forEach(child => {
+      preOrder(child, depth + 1)
+    })
+  }
+
+  preOrder(layoutTree)
+}

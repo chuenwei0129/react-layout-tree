@@ -11,6 +11,7 @@ export class LayoutTree {
   public offset: number
   constructor(public tree: SourceTree, depth = 0) {
     this.x = -1
+    // y 坐标为当前深度
     this.y = depth
     this.offset = 0
     this.children = tree.children.map(child => {
