@@ -100,7 +100,7 @@ const renderTreeNode = (tree: LayoutTree) => {
   const text = new Konva.Text({
     x: tree.x,
     y: tree.y,
-    text: tree.source.val,
+    text: tree.val,
     fontSize: 14
   })
   text.offsetX(text.width() / 2)
@@ -121,7 +121,7 @@ const setRealPosition = (tree: LayoutTree) => {
 }
 
 export const renderTree = (tree: SourceTree, setAbstractPosition: (tree: LayoutTree) => void) => {
-  const layoutTree: LayoutTree = structuredClone(new LayoutTree(tree))
+  const layoutTree: LayoutTree = new LayoutTree(tree)
   setAbstractPosition(layoutTree)
   setRealPosition(layoutTree)
   renderTreeShape(layoutTree)

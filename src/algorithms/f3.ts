@@ -32,7 +32,6 @@ const postOrder = (
     tree.x = posX
   } else if (tree.children.length === 1) {
     // 只有一个子节点
-    // 左移 1 位
     posX = tree.children[0].x - 1
   } else {
     // 有两个子节点
@@ -57,12 +56,12 @@ const postOrder = (
   tree.offset = offset[depth]
 }
 
-const moveOffset = (tree: LayoutTree, offset = 0) => {
+const moveOffset = (tree: LayoutTree, defaultOffset = 0) => {
   // 子节点按偏移量移动
-  tree.x += offset
+  tree.x += defaultOffset
   tree.children.forEach(child => {
-    // 3, 6 有 offset，这里把 3，6 的 offset 传递给其个自子节点
-    moveOffset(child, tree.offset + offset)
+    // 3, 6 有 offset
+    moveOffset(child, tree.offset + defaultOffset)
   })
 }
 
