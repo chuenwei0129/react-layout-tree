@@ -1,13 +1,13 @@
 import { useEffect, useRef } from 'react'
 import { f1 } from './algorithms/f1'
-import { d1 } from './algorithms/f1.data'
 import { f2 } from './algorithms/f2'
-import { d2 } from './algorithms/f2.data'
 import { f3 } from './algorithms/f3'
-import { d3 } from './algorithms/f3.data'
 import { f4 } from './algorithms/f4'
-import { d4 } from './algorithms/f4.data'
 import './App.css'
+import { d1 } from './data/f1.data'
+import { d2 } from './data/f2.data'
+import { d3 } from './data/f3.data'
+import { d4 } from './data/f4.data'
 
 import { clearTree, createRenderer, renderTree } from './renderer/renderer'
 

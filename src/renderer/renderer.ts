@@ -55,6 +55,7 @@ const renderHelperGrid = (stage: Stage) => {
 }
 
 let treeLayer: Layer | undefined = undefined
+
 const renderTreeLayer = (stage: Stage) => {
   treeLayer = new Konva.Layer()
   stage.add(treeLayer)
@@ -119,7 +120,6 @@ const setRealPosition = (tree: LayoutTree) => {
   tree.children.forEach(setRealPosition)
 }
 
-// 渲染树到页面上
 export const renderTree = (tree: SourceTree, setAbstractPosition: (tree: LayoutTree) => void) => {
   const layoutTree: LayoutTree = structuredClone(new LayoutTree(tree))
   setAbstractPosition(layoutTree)

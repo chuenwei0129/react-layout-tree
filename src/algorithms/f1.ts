@@ -1,5 +1,5 @@
 import type { LayoutTree } from '../renderer/model'
-import { traverse } from '../renderer/utils'
+import { traverse } from '../utils/traverse'
 
 export const f1 = (layoutTree: LayoutTree) => {
   // 中序遍历
