@@ -1,11 +1,12 @@
 import { LayoutTree } from '../renderer/model'
+import { traverse } from '../utils/traverse'
 
 // 1.当前节点是叶子节点且无左兄弟，x 设为 0
 // 2.当前节点是叶子节点且有左兄弟，x 为左兄弟的 x 加上间距，即根据左兄弟定位
 // 3.当前节点非叶子节点且有左兄弟，x 为左兄弟的 x 加上间距，x 相对子节点定位的差值保存到 offset 属性上
 // 4.当前节点非叶子节点且无左兄弟，x 为第一个子节点的 x 加上最后一个子节点的 x 除以 2，即根据子节点定位
 
-// 分析
+// d3 数据分析
 // 0 -> (0, 2)
 // 1 -> (0, 3) 1.5
 // 2 -> (1, 3) 0.5
@@ -20,6 +21,8 @@ const firstLoop = (tree: LayoutTree, distance = 1) => {
   // 后序遍历
   tree.children.forEach(child => {
     firstLoop(child)
+    // 初始化线程
+    initThread(child)
   })
 
   // 定位策略
@@ -55,8 +58,44 @@ const secondLoop = (tree: LayoutTree, defaultOffset = 0) => {
   })
 }
 
+// 初始化线程
+const initThread = (tree: LayoutTree) => {
+  // 兄弟节点存在才需要线程连接
+  if (tree.leftSibling()) {
+    // 初始化
+    // 指针指向当前节点的左兄弟节点
+    let leftSibling = tree.leftSibling()!
+    // 指针指向当前节点的最左侧的兄弟节点，当只有一个左兄弟节点时，和 leftSibling 相等
+    let firstSibling = tree.firstSibling()!
+    // 指针当指向前节点的左轮廓
+    let leftOutLine = tree
+    // 当只有一个节点时左轮廓 === 右轮廓
+    let rightOutLine = tree
+
+    // 往树下一层遍历
+    while (leftSibling.nextRight() && leftOutLine.nextLeft()) {
+      // 更新指针
+      leftSibling = leftSibling.nextRight()!
+      leftOutLine = leftOutLine.nextLeft()!
+      firstSibling = firstSibling.nextLeft()!
+      rightOutLine = rightOutLine.nextRight()!
+    }
+
+    // 线程连接规则
+    if (leftSibling.nextRight() && !rightOutLine.nextRight()) {
+      rightOutLine.thread = leftSibling.nextRight()
+    }
+
+    if (leftOutLine.nextLeft() && !firstSibling.nextLeft()) {
+      firstSibling.thread = leftOutLine.nextLeft()
+    }
+  }
+}
+
 export const f4 = (layoutTree: LayoutTree) => {
   firstLoop(layoutTree)
   secondLoop(layoutTree)
-  console.log(layoutTree)
+  ;[...traverse(layoutTree, -1)].forEach(tree => {
+    console.log(tree.data, tree.thread)
+  })
 }

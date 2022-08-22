@@ -38,6 +38,7 @@ function App() {
 
   const handlerF4 = () => {
     clearTree()
+    // 可以把 d3 传入 f4 辅助理解 f4 第一阶段的实现
     renderTree(d4, f4)
   }
 

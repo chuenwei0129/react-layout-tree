@@ -1,24 +1,34 @@
 import { SourceTree } from '../renderer/model'
 
 export const d4: SourceTree = {
-  val: '8',
+  val: 'Q',
   children: [
     {
-      val: '4',
+      val: 'G',
       children: [
         {
-          val: '0',
-          children: []
-        },
-        {
-          val: '3',
+          val: 'C',
           children: [
             {
-              val: '1',
+              val: 'B',
+              children: [
+                {
+                  val: 'A',
+                  children: []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          val: 'F',
+          children: [
+            {
+              val: 'D',
               children: []
             },
             {
-              val: '2',
+              val: 'E',
               children: []
             }
           ]
@@ -26,13 +36,37 @@ export const d4: SourceTree = {
       ]
     },
     {
-      val: '7',
+      val: 'H',
+      children: []
+    },
+    {
+      val: 'P',
       children: [
         {
-          val: '6',
+          val: 'I',
+          children: []
+        },
+        {
+          val: 'O',
           children: [
             {
-              val: '5',
+              val: 'J',
+              children: []
+            },
+            {
+              val: 'K',
+              children: []
+            },
+            {
+              val: 'L',
+              children: []
+            },
+            {
+              val: 'M',
+              children: []
+            },
+            {
+              val: 'N',
               children: []
             }
           ]

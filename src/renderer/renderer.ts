@@ -100,7 +100,7 @@ const renderTreeNode = (tree: LayoutTree) => {
   const text = new Konva.Text({
     x: tree.x,
     y: tree.y,
-    text: tree.val,
+    text: tree.data,
     fontSize: 14
   })
   text.offsetX(text.width() / 2)
