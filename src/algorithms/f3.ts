@@ -9,17 +9,17 @@ import { LayoutTree } from '../renderer/model'
 const postOrder = (
   tree: LayoutTree,
   depth = 0,
-  sameDepthNextPosXGroup: number[] = [],
+  sameLayerNextPosXGroup: number[] = [],
   offset: number[] = []
 ) => {
   tree.children.forEach(child => {
-    postOrder(child, depth + 1, sameDepthNextPosXGroup, offset)
+    postOrder(child, depth + 1, sameLayerNextPosXGroup, offset)
   })
 
   let posX: number
 
-  if (sameDepthNextPosXGroup[depth] === undefined) {
-    sameDepthNextPosXGroup[depth] = 0
+  if (sameLayerNextPosXGroup[depth] === undefined) {
+    sameLayerNextPosXGroup[depth] = 0
   }
 
   if (offset[depth] === undefined) {
@@ -28,7 +28,7 @@ const postOrder = (
 
   if (tree.children.length === 0) {
     // 没有子节点
-    posX = sameDepthNextPosXGroup[depth]
+    posX = sameLayerNextPosXGroup[depth]
     tree.x = posX
   } else if (tree.children.length === 1) {
     // 只有一个子节点
@@ -39,7 +39,7 @@ const postOrder = (
   }
 
   // 计算偏移量
-  offset[depth] = Math.max(offset[depth], sameDepthNextPosXGroup[depth] - posX)
+  offset[depth] = Math.max(offset[depth], sameLayerNextPosXGroup[depth] - posX)
 
   // 3 和 6 都偏移了 1
   // console.log(offset[depth])
@@ -50,7 +50,7 @@ const postOrder = (
   }
 
   // 让父节点居中，所以加 2
-  sameDepthNextPosXGroup[depth] += 2
+  sameLayerNextPosXGroup[depth] += 2
 
   // 偏移量
   tree.offset = offset[depth]

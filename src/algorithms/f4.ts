@@ -64,30 +64,35 @@ const initThread = (tree: LayoutTree) => {
   if (tree.leftSibling()) {
     // 初始化
     // 指针指向当前节点的左兄弟节点
-    let leftSibling = tree.leftSibling()!
+    //      1
+    //   2      3
+    // 4  5   6   7
+    // 1-2-5 左树内层指针 1-2-4 左树外层指针 1-3-6 右树内层指针，1-3-7 右树外指针
+    // 函数入口是 3 节点
+    let leftInner = tree.leftSibling()!
     // 指针指向当前节点的最左侧的兄弟节点，当只有一个左兄弟节点时，和 leftSibling 相等
-    let firstSibling = tree.firstSibling()!
+    let leftOuter = tree.firstSibling()!
     // 指针当指向前节点的左轮廓
-    let leftOutLine = tree
+    let rightInner = tree
     // 当只有一个节点时左轮廓 === 右轮廓
-    let rightOutLine = tree
+    let rightOuter = tree
 
     // 往树下一层遍历
-    while (leftSibling.nextRight() && leftOutLine.nextLeft()) {
+    while (leftInner.nextRight() && rightInner.nextLeft()) {
       // 更新指针
-      leftSibling = leftSibling.nextRight()!
-      leftOutLine = leftOutLine.nextLeft()!
-      firstSibling = firstSibling.nextLeft()!
-      rightOutLine = rightOutLine.nextRight()!
+      leftInner = leftInner.nextRight()!
+      rightInner = rightInner.nextLeft()!
+      leftOuter = leftOuter.nextLeft()!
+      rightOuter = rightOuter.nextRight()!
     }
 
-    // 线程连接规则
-    if (leftSibling.nextRight() && !rightOutLine.nextRight()) {
-      rightOutLine.thread = leftSibling.nextRight()
+    // 线程节点连接
+    if (leftInner.nextRight() && !rightOuter.nextRight()) {
+      rightOuter.thread = leftInner.nextRight()
     }
 
-    if (leftOutLine.nextLeft() && !firstSibling.nextLeft()) {
-      firstSibling.thread = leftOutLine.nextLeft()
+    if (rightInner.nextLeft() && !leftOuter.nextLeft()) {
+      leftOuter.thread = rightInner.nextLeft()
     }
   }
 }

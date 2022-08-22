@@ -20,9 +20,9 @@ export class LayoutTree {
   public ancestor: LayoutTree
   // 同一层级节点索引，从 1 开始
   // public index: number
-  // 获取同一层级第一个兄弟节点，初始化时都为 undefined
+  // 获取同一层级第一个兄弟节点，定义时都为 undefined
   private _firstSibling: LayoutTree | undefined
-  // 线程节点，也就是指向下一个轮廓节点，初始化时都为 undefined
+  // 线程节点，也就是指向下一个轮廓节点，定义时都为 undefined
   public thread: LayoutTree | undefined
 
   constructor(tree: SourceTree, depth = 0, parent: LayoutTree | undefined = undefined) {
