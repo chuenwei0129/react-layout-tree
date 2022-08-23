@@ -21,7 +21,7 @@ const firstLoop = (tree: LayoutTree, distance = 1) => {
   tree.children.forEach(child => {
     firstLoop(child)
     // 初始化线程
-    // 自下而上，生成节点 x 位置 !important
+    // 自下而上
     // 因为我们是后序遍历树，所以 x 确定位置要先于线程连接
     // 越下层的节点线程连接的越早
     // 处理子树冲突时，其下层的节点线程已经连接完璧
@@ -81,6 +81,12 @@ const initThread = (tree: LayoutTree, distance: number) => {
     // 当只有一个节点时左轮廓 === 右轮廓
     let rightTreeRightOutLine = tree
 
+    // 获取节点偏移量
+    let leftTreeRightOutLineOffset = leftTreeRightOutLine.offset
+    let leftTreeLeftOutLineOffset = leftTreeLeftOutLine.offset
+    let rightTreeLeftOutLineOffset = rightTreeLeftOutLine.offset
+    let rightTreeRightOutLineOffset = rightTreeRightOutLine.offset
+
     // 往树下一层遍历
     while (leftTreeRightOutLine.nextRight() && rightTreeLeftOutLine.nextLeft()) {
       // 更新指针
@@ -89,38 +95,51 @@ const initThread = (tree: LayoutTree, distance: number) => {
       leftTreeLeftOutLine = leftTreeLeftOutLine.nextLeft()!
       rightTreeRightOutLine = rightTreeRightOutLine.nextRight()!
 
-      // 移位处理
-      // leftTreeRightOutLine.x - rightTreeLeftOutLine.x === 0 表示节点位置重合
-      // 处理每一层子树的左右轮廓是否交叉
-      let diff = leftTreeRightOutLine.x - rightTreeLeftOutLine.x
+      // 计算真实 x 是否交叉，真实 x 依赖父节点的 offset
+      let diff =
+        leftTreeRightOutLine.x +
+        leftTreeRightOutLineOffset -
+        (rightTreeLeftOutLine.x + rightTreeLeftOutLineOffset)
       let shift = diff + distance
-      // 移位
+      // 规则：当节点间距比 distance 小时就需要移动
       if (shift > 0) {
-        moveCurrentTree(tree, shift)
+        // 移位
+        moveCurrTree(tree, shift)
+        // 更新移位后偏移量
+        leftTreeRightOutLineOffset += shift
+        rightTreeLeftOutLineOffset += shift
       }
-      // ...
+
+      // 循环处理 offset，一个子节点可能其祖父位移 1，父亲位移 2，那么累加的 offset 就是 1 + 2
+      leftTreeRightOutLineOffset += leftTreeRightOutLine.offset
+      rightTreeLeftOutLineOffset += rightTreeLeftOutLine.offset
+      leftTreeLeftOutLineOffset = leftTreeLeftOutLineOffset + leftTreeLeftOutLine.offset
+      rightTreeRightOutLineOffset = rightTreeRightOutLineOffset + rightTreeRightOutLine.offset
     }
 
     // 指针都指向了树底部节点，此时连接线程节点
     // 右树右轮廓指向左树右轮廓
     if (leftTreeRightOutLine.nextRight() && !rightTreeRightOutLine.nextRight()) {
       rightTreeRightOutLine.thread = leftTreeRightOutLine.nextRight()
+      // 修正因为线程影响导致 offset 累加出错的问题
+      rightTreeRightOutLine.offset += leftTreeRightOutLineOffset - rightTreeRightOutLineOffset
     }
 
     // 左树左轮廓指向右树左轮廓
     if (rightTreeLeftOutLine.nextLeft() && !leftTreeLeftOutLine.nextLeft()) {
       leftTreeLeftOutLine.thread = rightTreeLeftOutLine.nextLeft()
+      leftTreeLeftOutLine.offset += rightTreeLeftOutLineOffset - leftTreeLeftOutLineOffset
     }
   }
 }
 
-const moveCurrentTree = (tree: LayoutTree, shift: number) => {
+const moveCurrTree = (tree: LayoutTree, shift: number) => {
   tree.x += shift // 自身移动
-  // 后序遍历后代节点比父节点先确定位置，所以自身立即移动，后代节点需要记录 offset 后面移动
+  // 后序遍历后代节点比父节点先确定位置，所以自身节点立即移动，后代节点保存移动值到 offset 后续处理
   tree.offset += shift // 后代节点移动
 }
 
-export const f4 = (layoutTree: LayoutTree) => {
+export const f5 = (layoutTree: LayoutTree) => {
   firstLoop(layoutTree)
   secondLoop(layoutTree)
   // ;[...traverse(layoutTree, -1)].forEach(tree => {

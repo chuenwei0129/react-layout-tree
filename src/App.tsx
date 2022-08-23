@@ -3,10 +3,13 @@ import { f1 } from './algorithms/f1'
 import { f2 } from './algorithms/f2'
 import { f3 } from './algorithms/f3'
 import { f4 } from './algorithms/f4'
+import { f5 } from './algorithms/f5'
+import { f6 } from './algorithms/f6'
 import './App.css'
 import { d1 } from './data/f1.data'
 import { d2 } from './data/f2.data'
 import { d3 } from './data/f3.data'
+import { d4 } from './data/f4.data'
 
 import { clearTree, createRenderer, renderTree } from './renderer/renderer'
 
@@ -38,7 +41,19 @@ function App() {
   const handlerF4 = () => {
     clearTree()
     // 可以把 d3 传入 f4 辅助理解 f4 第一阶段的实现
-    renderTree(d3, f4)
+    renderTree(d4, f4)
+  }
+
+  const handlerF5 = () => {
+    clearTree()
+    // 可以把 d3 传入 f4 辅助理解 f4 第一阶段的实现
+    renderTree(d4, f5)
+  }
+
+  const handlerF6 = () => {
+    clearTree()
+    // 可以把 d3 传入 f4 辅助理解 f4 第一阶段的实现
+    renderTree(d4, f6)
   }
 
   return (
@@ -49,8 +64,8 @@ function App() {
         <button onClick={handlerF2}>算法2</button>
         <button onClick={handlerF3}>算法3</button>
         <button onClick={handlerF4}>算法4</button>
-        <button onClick={handlerF4}>算法5</button>
-        <button onClick={handlerF4}>算法6</button>
+        <button onClick={handlerF5}>算法4补丁1</button>
+        <button onClick={handlerF6}>算法4补丁2</button>
         <button onClick={handlerF4}>思维导图</button>
       </fieldset>
       <div className='container' ref={containerRef}></div>

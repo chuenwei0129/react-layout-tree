@@ -16,28 +16,38 @@ export class LayoutTree {
   public children: LayoutTree[]
   // 根据左兄弟定位的 x 与根据子节点中间定位的 x 之差
   public offset: number
-  // 指向自身
-  public ancestor: LayoutTree
-  // 同一层级节点索引，从 1 开始
-  // public index: number
+
   // 获取同一层级第一个兄弟节点，定义时都为 undefined
   private _firstSibling: LayoutTree | undefined
   // 线程节点，也就是指向下一个轮廓节点，定义时都为 undefined
   public thread: LayoutTree | undefined
 
-  constructor(tree: SourceTree, depth = 0, parent: LayoutTree | undefined = undefined) {
+  // ...
+  // 指向自身
+  public ancestor: LayoutTree
+  public change: number
+  public shift: number
+  // 同一层级节点索引，从 1 开始
+  public index: number
+  // ...
+
+  constructor(tree: SourceTree, depth = 0, parent: LayoutTree | undefined = undefined, index = 1) {
     this.data = tree.val
     this.x = -1
     this.y = depth
     this.parent = parent
     this.children = tree.children.map((child, index) => {
-      return new LayoutTree(child, depth + 1, this)
+      return new LayoutTree(child, depth + 1, this, index + 1)
     })
     this.offset = 0
     this.thread = undefined
     this._firstSibling = undefined
+
+    // 最后补丁
     this.ancestor = this
-    // this.index = index
+    this.index = index
+    this.change = 0
+    this.shift = 0
   }
 
   // 关联了线程则返回线程节点，否则返回最右侧的子节点，也就是树的右轮廓的下一个节点
