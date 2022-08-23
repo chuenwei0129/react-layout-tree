@@ -7,7 +7,6 @@ import './App.css'
 import { d1 } from './data/f1.data'
 import { d2 } from './data/f2.data'
 import { d3 } from './data/f3.data'
-import { d4 } from './data/f4.data'
 
 import { clearTree, createRenderer, renderTree } from './renderer/renderer'
 
@@ -39,7 +38,7 @@ function App() {
   const handlerF4 = () => {
     clearTree()
     // 可以把 d3 传入 f4 辅助理解 f4 第一阶段的实现
-    renderTree(d4, f4)
+    renderTree(d3, f4)
   }
 
   return (

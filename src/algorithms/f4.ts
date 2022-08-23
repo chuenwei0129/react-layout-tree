@@ -1,5 +1,4 @@
 import { LayoutTree } from '../renderer/model'
-import { traverse } from '../utils/traverse'
 
 // 1.当前节点是叶子节点且无左兄弟，x 设为 0
 // 2.当前节点是叶子节点且有左兄弟，x 为左兄弟的 x 加上间距，即根据左兄弟定位
@@ -22,7 +21,11 @@ const firstLoop = (tree: LayoutTree, distance = 1) => {
   tree.children.forEach(child => {
     firstLoop(child)
     // 初始化线程
-    initThread(child)
+    // 自下而上
+    // 因为我们是后序遍历树，所以 x 确定位置要先于线程连接
+    // 越下层的节点线程连接的越早
+    // 处理子树冲突时，其下层的节点线程已经连接完璧
+    initThread(child, distance)
   })
 
   // 定位策略
@@ -59,7 +62,7 @@ const secondLoop = (tree: LayoutTree, defaultOffset = 0) => {
 }
 
 // 初始化线程
-const initThread = (tree: LayoutTree) => {
+const initThread = (tree: LayoutTree, distance: number) => {
   // 兄弟节点存在才需要线程连接
   if (tree.leftSibling()) {
     // 初始化
@@ -67,40 +70,60 @@ const initThread = (tree: LayoutTree) => {
     //      1
     //   2      3
     // 4  5   6   7
-    // 1-2-5 左树内层指针 1-2-4 左树外层指针 1-3-6 右树内层指针，1-3-7 右树外指针
-    // 函数入口是 3 节点
-    let leftInner = tree.leftSibling()!
+    // 函数入口是 3
+    // 1-2-5 左树右轮廓指针
+    // 1-2-4 左树左轮廓指针
+    let leftTreeRightOutLine = tree.leftSibling()!
     // 指针指向当前节点的最左侧的兄弟节点，当只有一个左兄弟节点时，和 leftSibling 相等
-    let leftOuter = tree.firstSibling()!
+    let leftTreeLeftOutLine = tree.firstSibling()!
     // 指针当指向前节点的左轮廓
-    let rightInner = tree
+    let rightTreeLeftOutLine = tree
     // 当只有一个节点时左轮廓 === 右轮廓
-    let rightOuter = tree
+    let rightTreeRightOutLine = tree
 
     // 往树下一层遍历
-    while (leftInner.nextRight() && rightInner.nextLeft()) {
+    while (leftTreeRightOutLine.nextRight() && rightTreeLeftOutLine.nextLeft()) {
       // 更新指针
-      leftInner = leftInner.nextRight()!
-      rightInner = rightInner.nextLeft()!
-      leftOuter = leftOuter.nextLeft()!
-      rightOuter = rightOuter.nextRight()!
+      leftTreeRightOutLine = leftTreeRightOutLine.nextRight()!
+      rightTreeLeftOutLine = rightTreeLeftOutLine.nextLeft()!
+      leftTreeLeftOutLine = leftTreeLeftOutLine.nextLeft()!
+      rightTreeRightOutLine = rightTreeRightOutLine.nextRight()!
+
+      // ...
+      // leftTreeRightOutLine.x - rightTreeLeftOutLine.x === 0 表示节点位置重合
+      // 处理每一层子树的左右轮廓是否交叉
+      let diff = leftTreeRightOutLine.x - rightTreeLeftOutLine.x
+      let shift = diff + distance
+      // // 移位
+      if (diff >= 0) {
+        moveCurrentTree(tree, shift)
+      }
+      // ...
     }
 
-    // 线程节点连接
-    if (leftInner.nextRight() && !rightOuter.nextRight()) {
-      rightOuter.thread = leftInner.nextRight()
+    // 指针都指向了树底部节点，此时连接线程节点
+    // 右树右轮廓指向左树右轮廓
+    if (leftTreeRightOutLine.nextRight() && !rightTreeRightOutLine.nextRight()) {
+      rightTreeRightOutLine.thread = leftTreeRightOutLine.nextRight()
     }
 
-    if (rightInner.nextLeft() && !leftOuter.nextLeft()) {
-      leftOuter.thread = rightInner.nextLeft()
+    // 左树左轮廓指向右树左轮廓
+    if (rightTreeLeftOutLine.nextLeft() && !leftTreeLeftOutLine.nextLeft()) {
+      leftTreeLeftOutLine.thread = rightTreeLeftOutLine.nextLeft()
     }
   }
+}
+
+const moveCurrentTree = (tree: LayoutTree, shift: number) => {
+  tree.x += shift // 自身移动
+  // 后序遍历后代节点比父节点先确定位置，所以自身立即移动，后代节点需要后面移动
+  tree.offset += shift // 后代节点移动
 }
 
 export const f4 = (layoutTree: LayoutTree) => {
   firstLoop(layoutTree)
   secondLoop(layoutTree)
-  ;[...traverse(layoutTree, -1)].forEach(tree => {
-    console.log(tree.data, tree.thread)
-  })
+  // ;[...traverse(layoutTree, -1)].forEach(tree => {
+  //   console.log(tree.data, tree.thread)
+  // })
 }
