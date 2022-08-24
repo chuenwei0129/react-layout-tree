@@ -22,7 +22,6 @@ export class LayoutTree {
   // 线程节点，也就是指向下一个轮廓节点，定义时都为 undefined
   public thread: LayoutTree | undefined
 
-  // ...
   // 指向自身
   public ancestor: LayoutTree
   public change: number

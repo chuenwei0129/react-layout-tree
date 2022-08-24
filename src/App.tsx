@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { f1 } from './algorithms/f1'
 import { f2 } from './algorithms/f2'
 import { f3 } from './algorithms/f3'
-import { f4 } from './algorithms/f4.origin'
+import { f4 } from './algorithms/f4.base'
 import { f4PatchOffset } from './algorithms/f4.patch.offset'
 import { f4PatchShift } from './algorithms/f4.patch.shift'
 import './App.css'
@@ -42,13 +42,13 @@ function App() {
   const handleF4 = () => {
     clearTree()
     // 可以把 d3 传入 f4 辅助理解 f4 第一阶段的实现
-    renderTree(d4, f4)
+    renderTree(d4, f4, 'Y')
   }
 
   // 给 f4 打补丁，处理 shift 移位计算，并未考虑 x 的 offset
   const handleF4PatchOffset = () => {
     clearTree()
-    renderTree(d4, f4PatchOffset)
+    renderTree(d4, f4PatchOffset, 'Y')
   }
 
   // 给 f4 打补丁，处理 shift 后，导致的，未移位的兄弟节点位置与移位后不均分
