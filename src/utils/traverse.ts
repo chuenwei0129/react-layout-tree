@@ -1,4 +1,4 @@
-import type { LayoutTree } from '../renderer/model'
+import type { LayoutTree } from '../data/model'
 
 // 通用遍历
 // ord = 0 -> 先序

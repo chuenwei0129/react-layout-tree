@@ -1,4 +1,4 @@
-import type { LayoutTree } from '../renderer/model'
+import type { LayoutTree } from '../data/model'
 
 // 同树的轮廓算法
 export const f2 = (layoutTree: LayoutTree) => {

@@ -1,4 +1,4 @@
-import { LayoutTree } from '../renderer/model'
+import { LayoutTree } from '../data/model'
 
 // 1.当前节点是叶子节点且无左兄弟，x 设为 0
 // 2.当前节点是叶子节点且有左兄弟，x 为左兄弟的 x 加上间距，即根据左兄弟定位
@@ -25,7 +25,7 @@ const firstLoop = (tree: LayoutTree, distance = 1) => {
     // 因为我们是后序遍历树，所以 x 确定位置要先于线程连接
     // 越下层的节点线程连接的越早
     // 处理子树冲突时，其下层的节点线程已经连接完璧
-    initThread(child, distance)
+    connectThread(child, distance)
   })
 
   // 定位策略
@@ -61,8 +61,8 @@ const secondLoop = (tree: LayoutTree, defaultOffset = 0) => {
   })
 }
 
-// 初始化线程
-const initThread = (tree: LayoutTree, distance: number) => {
+// 连接线程节点
+const connectThread = (tree: LayoutTree, distance: number) => {
   // 兄弟节点存在才需要线程连接
   if (tree.leftSibling()) {
     // 初始化
@@ -89,16 +89,8 @@ const initThread = (tree: LayoutTree, distance: number) => {
       leftTreeLeftOutLine = leftTreeLeftOutLine.nextLeft()!
       rightTreeRightOutLine = rightTreeRightOutLine.nextRight()!
 
-      // 移位处理
-      // leftTreeRightOutLine.x - rightTreeLeftOutLine.x === 0 表示节点位置重合
-      // 处理每一层子树的左右轮廓是否交叉
-      let diff = leftTreeRightOutLine.x - rightTreeLeftOutLine.x
-      let shift = diff + distance
-      // 移位
-      if (shift > 0) {
-        moveCurrentTree(tree, shift)
-      }
-      // ...
+      // 通过指针循环找到冲突的节点，计算出当前节点的移位长度
+      handleShift(tree, leftTreeRightOutLine.x, rightTreeLeftOutLine.x, distance)
     }
 
     // 指针都指向了树底部节点，此时连接线程节点
@@ -114,9 +106,28 @@ const initThread = (tree: LayoutTree, distance: number) => {
   }
 }
 
-const moveCurrentTree = (tree: LayoutTree, shift: number) => {
+// 当前子树，下一层左树右轮廓指针指向节点 x 坐标
+const handleShift = (
+  currTree: LayoutTree,
+  nextLeftTreeRightOutLinePosX: number,
+  nextRightTreeLeftOutLinePosX: number,
+  distance: number
+) => {
+  // 移位处理
+  // leftTreeRightOutLine.x - rightTreeLeftOutLine.x === 0 表示节点位置重合
+  // 处理每一层子树的左右轮廓是否交叉
+  let diff = nextLeftTreeRightOutLinePosX - nextRightTreeLeftOutLinePosX
+  let shift = diff + distance
+  // 移位
+  if (shift > 0) {
+    moveCurrTree(currTree, shift)
+  }
+}
+
+// 节点位移
+const moveCurrTree = (tree: LayoutTree, shift: number) => {
   tree.x += shift // 自身移动
-  // 后序遍历后代节点比父节点先确定位置，所以自身立即移动，后代节点需要记录 offset 后面移动
+  // 后序遍历后代节点比父节点先确定位置，所以自身节点立即移动，后代节点保存移动值到 offset 后续处理
   tree.offset += shift // 后代节点移动
 }
 

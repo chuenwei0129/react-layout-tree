@@ -1,7 +1,7 @@
 import Konva from 'konva'
 import type { Layer } from 'konva/lib/Layer'
 import type { Stage } from 'konva/lib/Stage'
-import { LayoutTree, SourceTree } from './model'
+import { LayoutTree, SourceTree } from '../data/model'
 
 // 默认配置 30 * 20 网格
 export const CONTAINER_WIDTH = 900
@@ -63,18 +63,27 @@ const renderTreeLayer = (stage: Stage) => {
 
 export const clearTree = () => treeLayer?.removeChildren()
 
+export type Direction = 'X' | 'Y'
+
 // 后序遍历
-const renderTreeShape = (tree: LayoutTree) => {
+const renderTreeShape = (tree: LayoutTree, direction: Direction) => {
   tree.children.forEach(child => {
-    renderTreeNodeConnectedLine(tree, child)
-    renderTreeShape(child)
+    renderTreeNodeConnectedLine(tree, child, direction)
+    renderTreeShape(child, direction)
   })
-  renderTreeNode(tree)
+  renderTreeNode(tree, direction)
 }
 
-const renderTreeNodeConnectedLine = (treeNode1: LayoutTree, treeNode2: LayoutTree) => {
+const renderTreeNodeConnectedLine = (
+  treeNode1: LayoutTree,
+  treeNode2: LayoutTree,
+  direction: Direction
+) => {
   const connectedLine = new Konva.Line({
-    points: [treeNode1.x, treeNode1.y, treeNode2.x, treeNode2.y],
+    points:
+      direction === 'X'
+        ? [treeNode1.x, treeNode1.y, treeNode2.x, treeNode2.y]
+        : [treeNode1.y, treeNode1.x, treeNode2.y, treeNode2.x],
     stroke: 'black',
     strokeWidth: 2,
     lineCap: 'round',
@@ -84,28 +93,29 @@ const renderTreeNodeConnectedLine = (treeNode1: LayoutTree, treeNode2: LayoutTre
   treeLayer?.draw()
 }
 
-const renderTreeNode = (tree: LayoutTree) => {
+const renderTreeNode = (tree: LayoutTree, direction: Direction) => {
   const treeNode = new Konva.Circle({
-    // 圆心坐标
-    x: tree.x,
-    y: tree.y,
+    x: direction === 'X' ? tree.x : tree.y,
+    y: direction === 'X' ? tree.y : tree.x,
     radius: HELPER_GRID_SIZE / 3,
     fill: '#fff',
     stroke: 'black',
     strokeWidth: 2
   })
+
   treeLayer?.add(treeNode)
-  treeLayer?.draw()
 
   const text = new Konva.Text({
-    x: tree.x,
-    y: tree.y,
+    x: direction === 'X' ? tree.x : tree.y,
+    y: direction === 'X' ? tree.y : tree.x,
     text: tree.data,
     fontSize: 14
   })
   text.offsetX(text.width() / 2)
   text.offsetY(text.height() / 2)
   treeLayer?.add(text)
+
+  treeLayer?.draw()
 }
 
 const setRealPosition = (tree: LayoutTree) => {
@@ -120,9 +130,13 @@ const setRealPosition = (tree: LayoutTree) => {
   tree.children.forEach(setRealPosition)
 }
 
-export const renderTree = (tree: SourceTree, setAbstractPosition: (tree: LayoutTree) => void) => {
+export const renderTree = (
+  tree: SourceTree,
+  setAbstractPosition: (tree: LayoutTree) => void,
+  direction: Direction = 'X'
+) => {
   const layoutTree: LayoutTree = new LayoutTree(tree)
   setAbstractPosition(layoutTree)
   setRealPosition(layoutTree)
-  renderTreeShape(layoutTree)
+  renderTreeShape(layoutTree, direction)
 }

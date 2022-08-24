@@ -6,7 +6,7 @@ export type SourceTree = {
 
 export class LayoutTree {
   // 节点数据
-  public data: any
+  public data: string
   // 坐标
   public x: number
   public y: number
@@ -29,7 +29,6 @@ export class LayoutTree {
   public shift: number
   // 同一层级节点索引，从 1 开始
   public index: number
-  // ...
 
   constructor(tree: SourceTree, depth = 0, parent: LayoutTree | undefined = undefined, index = 1) {
     this.data = tree.val

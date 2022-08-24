@@ -1,4 +1,4 @@
-import type { LayoutTree } from '../renderer/model'
+import type { LayoutTree } from '../data/model'
 import { traverse } from '../utils/traverse'
 
 export const f1 = (layoutTree: LayoutTree) => {

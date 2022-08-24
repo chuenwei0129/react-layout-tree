@@ -1,4 +1,4 @@
-import { LayoutTree } from '../renderer/model'
+import { LayoutTree } from '../data/model'
 
 // 1.当前节点是叶子节点且无左兄弟，x 设为 0
 // 2.当前节点是叶子节点且有左兄弟，x 为左兄弟的 x 加上间距，即根据左兄弟定位
@@ -31,10 +31,10 @@ const firstLoop = (tree: LayoutTree, distance = 1) => {
     let defaultAncestor = tree.children[0]
     tree.children.forEach(child => {
       firstLoop(child)
-      defaultAncestor = initThread(child, distance, defaultAncestor)
+      defaultAncestor = connectThead(child, distance, defaultAncestor)
     })
 
-    // 将 shift 分摊添加到中间的节点上，也就是添加到节点的 x 及mod值上
+    // 将 shift 分摊添加到中间的节点上，也就是添加到节点的 x 及 offset 值上
     handleShift(tree)
 
     let mid = (tree.children[0].x + tree.children[tree.children.length - 1].x) / 2
@@ -59,7 +59,7 @@ const secondLoop = (tree: LayoutTree, defaultOffset = 0) => {
 }
 
 // 初始化线程
-const initThread = (tree: LayoutTree, distance: number, defaultAncestor: LayoutTree) => {
+const connectThead = (tree: LayoutTree, distance: number, defaultAncestor: LayoutTree) => {
   // 兄弟节点存在才需要线程连接
   if (tree.leftSibling()) {
     // 初始化
@@ -132,6 +132,7 @@ const initThread = (tree: LayoutTree, distance: number, defaultAncestor: LayoutT
         leftTreeLeftOutLine.offset += rightTreeLeftOutLineOffset - leftTreeLeftOutLineOffset
       }
 
+      // 更新 defaultAncestor
       defaultAncestor = tree
     }
   }
@@ -142,7 +143,8 @@ const initThread = (tree: LayoutTree, distance: number, defaultAncestor: LayoutT
 const moveCurrTree = (tree: LayoutTree, shift: number, ancestor: LayoutTree) => {
   let subTrees = tree.index - ancestor.index // 索引相减，得到之间被分隔的数量
   let average = shift / subTrees // 平分偏移量
-  tree.shift += shift // 完整的shift值添加到v节点的shift属性上
+  // 计算偏移量保存的状态
+  tree.shift += shift
   tree.change -= average
   ancestor.change += average
 
@@ -151,7 +153,6 @@ const moveCurrTree = (tree: LayoutTree, shift: number, ancestor: LayoutTree) => 
   tree.offset += shift // 后代节点移动
 }
 
-// 应用分摊
 const handleShift = (tree: LayoutTree) => {
   let [change, shift] = [0, 0]
   // 从后往前遍历子节点
@@ -165,7 +166,7 @@ const handleShift = (tree: LayoutTree) => {
   }
 }
 
-// 找出节点所属的根节点
+// 找出节点所属的根节点，d4 确定 G 和 P 节点
 const handleAncestor = (
   leftTreeRightOutLine: LayoutTree,
   tree: LayoutTree,
@@ -178,7 +179,7 @@ const handleAncestor = (
   }
 }
 
-export const f6 = (layoutTree: LayoutTree) => {
+export const f4PatchShift = (layoutTree: LayoutTree) => {
   firstLoop(layoutTree)
   secondLoop(layoutTree)
 }

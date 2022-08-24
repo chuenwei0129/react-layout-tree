@@ -1,4 +1,4 @@
-import { LayoutTree } from '../renderer/model'
+import { LayoutTree } from '../data/model'
 
 // 后序遍历
 // 测试数据值就是遍历数据顺序

@@ -1,4 +1,4 @@
-import { LayoutTree } from '../renderer/model'
+import { LayoutTree } from '../data/model'
 
 // 1.当前节点是叶子节点且无左兄弟，x 设为 0
 // 2.当前节点是叶子节点且有左兄弟，x 为左兄弟的 x 加上间距，即根据左兄弟定位
@@ -25,7 +25,7 @@ const firstLoop = (tree: LayoutTree, distance = 1) => {
     // 因为我们是后序遍历树，所以 x 确定位置要先于线程连接
     // 越下层的节点线程连接的越早
     // 处理子树冲突时，其下层的节点线程已经连接完璧
-    initThread(child, distance)
+    connectThread(child, distance)
   })
 
   // 定位策略
@@ -62,7 +62,7 @@ const secondLoop = (tree: LayoutTree, defaultOffset = 0) => {
 }
 
 // 初始化线程
-const initThread = (tree: LayoutTree, distance: number) => {
+const connectThread = (tree: LayoutTree, distance: number) => {
   // 兄弟节点存在才需要线程连接
   if (tree.leftSibling()) {
     // 初始化
@@ -139,10 +139,7 @@ const moveCurrTree = (tree: LayoutTree, shift: number) => {
   tree.offset += shift // 后代节点移动
 }
 
-export const f5 = (layoutTree: LayoutTree) => {
+export const f4PatchOffset = (layoutTree: LayoutTree) => {
   firstLoop(layoutTree)
   secondLoop(layoutTree)
-  // ;[...traverse(layoutTree, -1)].forEach(tree => {
-  //   console.log(tree.data, tree.thread)
-  // })
 }

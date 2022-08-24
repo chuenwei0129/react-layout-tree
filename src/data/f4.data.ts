@@ -1,4 +1,4 @@
-import { SourceTree } from '../renderer/model'
+import { SourceTree } from './model'
 
 export const d4: SourceTree = {
   val: 'Q',
